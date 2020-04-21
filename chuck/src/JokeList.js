@@ -13,41 +13,76 @@ class JokeList extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { jokes: [] };
+    this.state = { 
+        jokes: JSON.parse(window.localStorage.getItem("jokes") || "[]"),
+        loading: false 
+    }
+    
     this.handlePoints = this.handlePoints.bind(this);
+    this.getJokes = this.getJokes.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    if (this.state.jokes.length === 0){this.getJokes();}  
+  }
+
+  async getJokes(){
     let jokes = [];
     for (let i = 0; i < this.props.numJokesToGet; i++) {
       let res = await axios.get(`${API_BASE_URL}`);
-      jokes.push({ id: uuid(), joke: res.data.value, points: 0 });
+      jokes.push({ id: uuid(), joke: res.data.value, points: Math.floor(Math.random() * 10) });
       console.log(i + "- " + res.data.value);
     }
-    this.setState({ jokes: jokes });
+    this.setState(
+        st => ({
+          loading: false,
+          jokes: [...st.jokes, ...jokes]
+        }),
+        () =>
+          window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes))
+      );
+    // this.setState({ jokes: jokes });
   }
 
   handlePoints(id, delta) {
     this.setState(
-        st => ({
+          st => ({
             jokes: st.jokes.map(item =>
-            item.id === id ? { ...item, points: item.points + delta } : item
-      ),
-    }));
+              item.id === id ? { ...item, points: item.points + delta } : item
+            )
+          }),
+          () =>
+            window.localStorage.setItem("jokes", JSON.stringify(this.state.jokes))
+        );
+  }
+
+  handleClick(evt){
+    this.setState({ loading: true }, this.getJokes); //Callback, finishes first action and begins with second
   }
 
   render() {
-    return (
+    if (this.state.loading) {
+        return (
+          <div className='JokeList-loader'>
+            <img src='https://raw.githubusercontent.com/ManzDev/cursos-assets/gh-pages/css3/chuck-norris-sticker.png' alt='Chuck Norris'/>
+            <h1 className='JokeList-title'>Loading...</h1>
+          </div>
+        );
+      }
+    let jokes = this.state.jokes.sort((a, b) => b.points - a.points);  
+
+    return ( 
       <div className="JokeList">
         <div className="JokeList-sidebar">
           <div className="JokeList-title">
             <span>ChuckNorris</span> Jokes
           </div>
           <img src={chuckapproved2} alt="Chuck Approved" />
-          <button className="JokeList-newjokes">New Jokes</button>
+          <button className="JokeList-newjokes" onClick={this.handleClick}>New Jokes</button>
         </div>
         <div className="JokeList-jokes">
-          {this.state.jokes.map((item, idx) => (
+          {jokes.map((item, idx) => (
             <Joke
               key={item.id}
               item={item.joke}
@@ -56,9 +91,7 @@ class JokeList extends Component {
               rankDown={() => this.handlePoints(item.id, -1)}
             />
           ))}
-
-          {/* <Joke {item} /> */}
-        </div>
+        </div> 
       </div>
     );
   }

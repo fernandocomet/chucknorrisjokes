@@ -6,6 +6,7 @@
     width: 80%;
     height: 80%;
     background-color: white;
+    z-index: 10;
 }
 .JokeList-sidebar{
     display: flex;
@@ -23,6 +24,7 @@
     font-weight: 300;
     font-size: 30px;
     margin-bottom: 30px;
+    text-align: center;
 }
 .JokeList-title span{
     font-weight: 700;
@@ -42,6 +44,7 @@
     /* text-decoration: none;
     display: inline-block; */
     font-size: 20px;
+    cursor: pointer;
 }
 .JokeList-jokes{
     padding: 20px;
@@ -52,4 +55,12 @@
     /* width: 90%; 
     padding: 10px;
     border: 1px solid black; */
+}
+
+.JokeList-loader{
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
 }
