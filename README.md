@@ -2,6 +2,7 @@
 An app that lets people view and vote on Chuck Norris jokes
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The App takes Chuck Norris facts from [chucknorris.io api](https:api.chucknorris.io) then saves it to the Local Storage and sorts the quotes by points. User can vote on quotes, generate new ones or scroll to see all quotes.
 
 ## Available Scripts
 
